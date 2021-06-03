@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 import { fromRollup } from '@web/dev-server-rollup';
 import rollupJson from '@rollup/plugin-json';
 import { storybookPlugin } from '@web/dev-server-storybook';
-// import { hmrPlugin, presets } from '@open-wc/dev-server-hmr';
 
 const json = fromRollup(rollupJson);
 
@@ -23,12 +22,5 @@ export default {
     mimeTypes: {
         '**/*.json': 'js',
     },
-    plugins: [
-        json(),
-        storybookPlugin({ type: 'web-components' }),
-        // hmrPlugin({
-        //     include: ['[packages]/**/*'],
-        //     presets: [presets.litElement],
-        // }),
-    ],
+    plugins: [json(), storybookPlugin({ type: 'web-components' })],
 };

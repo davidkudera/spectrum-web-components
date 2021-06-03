@@ -43,8 +43,8 @@
         "lit-html"
     ],
     "dependencies": {
-        "lit-element": "^2.4.0",
-        "lit-html": "^1.0.0",
+        "lit-element": "^2.5.1",
+        "lit-html": "^1.4.1",
         "tslib": "^2.0.0"
     },
     "types": "./src/index.d.ts",
