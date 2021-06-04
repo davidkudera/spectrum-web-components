@@ -18,6 +18,7 @@ import {
     PropertyValues,
     query,
 } from '@spectrum-web-components/base';
+import { ProvideLang } from '@spectrum-web-components/theme';
 import { streamingListener } from '@spectrum-web-components/base/src/streaming-listener.js';
 import { NumberFormatter, NumberParser } from '@internationalized/number';
 
@@ -67,7 +68,7 @@ export class NumberField extends TextfieldBase {
 
     /**
      * An `<sp-number-field>` element will process its numeric value with
-     * `new Intl.NumberFormat(navigator.language, this.formatOptions).format(this.valueAsNumber)`
+     * `new Intl.NumberFormat(this.resolvedLanguage, this.formatOptions).format(this.valueAsNumber)`
      * in order to prepare it for visual delivery in the input. In order to customize this
      * processing supply your own `Intl.NumberFormatOptions` object here.
      *
@@ -125,7 +126,7 @@ export class NumberField extends TextfieldBase {
 
     public set valueAsString(value: string) {
         this.value = new NumberParser(
-            navigator.language,
+            this.resolvedLanguage,
             this.formatOptions
         ).parse(value);
     }
@@ -133,16 +134,20 @@ export class NumberField extends TextfieldBase {
     public get formattedValue(): string {
         if (isNaN(this.value)) return '';
         return new NumberFormatter(
-            navigator.language,
+            this.resolvedLanguage,
             this.formatOptions
         ).format(this.value);
     }
 
     private convertValueToNumber(value: string): number {
-        return new NumberParser(navigator.language, this.formatOptions).parse(
-            value
-        );
+        return new NumberParser(
+            this.resolvedLanguage,
+            this.formatOptions
+        ).parse(value);
     }
+
+    private resolvedLanguage =
+        document.documentElement.lang || navigator.language;
 
     private get _step(): number {
         if (typeof this.step !== 'undefined') {
@@ -428,7 +433,7 @@ export class NumberField extends TextfieldBase {
             changes.has('min')
         ) {
             const value = new NumberParser(
-                navigator.language,
+                this.resolvedLanguage,
                 this.formatOptions
             ).parse(this.inputElement.value);
             this.value = this.validateInput(value);
@@ -459,5 +464,33 @@ export class NumberField extends TextfieldBase {
             }
             this.inputElement.inputMode = inputMode;
         }
+    }
+
+    public connectedCallback(): void {
+        super.connectedCallback();
+        this.resolveLanguage();
+    }
+
+    public disconnectedCallback(): void {
+        this.resolveLanguage();
+        super.disconnectedCallback();
+    }
+
+    private resolveLanguage(): void {
+        const queryThemeEvent = new CustomEvent<ProvideLang>(
+            'sp-language-context',
+            {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    callback: (lang: string) => {
+                        this.resolvedLanguage = lang;
+                        this.requestUpdate();
+                    },
+                },
+                cancelable: true,
+            }
+        );
+        this.dispatchEvent(queryThemeEvent);
     }
 }
