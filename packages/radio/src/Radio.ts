@@ -17,10 +17,10 @@ import {
     CSSResultArray,
     TemplateResult,
     PropertyValues,
+    SpectrumElement,
 } from '@spectrum-web-components/base';
 
 import radioStyles from './radio.css.js';
-import { Focusable } from '@spectrum-web-components/shared/src/focusable.js';
 
 /**
  * Spectrum Radio Button Component
@@ -34,7 +34,7 @@ import { Focusable } from '@spectrum-web-components/shared/src/focusable.js';
  *
  * @event sp-radio:change - When the input is interacted with and its state is changed
  */
-export class Radio extends Focusable {
+export class Radio extends SpectrumElement {
     public static get styles(): CSSResultArray {
         return [radioStyles];
     }
@@ -48,6 +48,9 @@ export class Radio extends Focusable {
     public checked = false;
 
     @property({ type: Boolean, reflect: true })
+    public disabled = false;
+
+    @property({ type: Boolean, reflect: true })
     public emphasized = false;
 
     @property({ type: Boolean, reflect: true })
@@ -59,8 +62,11 @@ export class Radio extends Focusable {
     @query('#input')
     private inputElement!: HTMLInputElement;
 
-    public get focusElement(): HTMLElement {
-        return this.inputElement;
+    public click(): void {
+        if (this.disabled) {
+            return;
+        }
+        this.inputElement.click();
     }
 
     public handleChange(event: Event): void {
@@ -83,10 +89,18 @@ export class Radio extends Focusable {
                 value=${this.value}
                 .checked=${this.checked}
                 @change=${this.handleChange}
+                aria-hidden="true"
+                tabindex="-1"
+                ?disabled=${this.disabled}
             />
             <span id="button"></span>
-            <label id="label"><slot></slot></label>
+            <span id="label" role="presentation"><slot></slot></span>
         `;
+    }
+
+    protected firstUpdated(changes: PropertyValues): void {
+        super.firstUpdated(changes);
+        this.setAttribute('role', 'radio');
     }
 
     protected updated(changes: PropertyValues): void {

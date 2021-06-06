@@ -207,6 +207,7 @@ export class RadioGroup extends FieldGroup {
 
     protected firstUpdated(changes: PropertyValues<this>): void {
         super.firstUpdated(changes);
+        this.setAttribute('role', 'radiogroup');
         const checkedRadio = this.querySelector('sp-radio[checked]') as Radio;
         const checkedRadioValue = checkedRadio ? checkedRadio.value : '';
         // Prefer the checked item over the selected value

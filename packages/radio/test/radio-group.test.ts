@@ -218,27 +218,28 @@ describe('Radio Group - focus control', () => {
 
         radio2.focus();
         await elementUpdated(el);
+        expect(document.activeElement === radio2, 'start 2').to.be.true;
 
         el.dispatchEvent(enterEvent);
         el.dispatchEvent(endEvent);
         await elementUpdated(el);
 
-        expect(document.activeElement === radio4).to.be.true;
+        expect(document.activeElement === radio4, 'first 4').to.be.true;
 
         el.dispatchEvent(homeEvent);
         await elementUpdated(el);
 
-        expect(document.activeElement === radio2).to.be.true;
+        expect(document.activeElement === radio2, 'second 2').to.be.true;
 
         el.dispatchEvent(arrowUpEvent);
         await elementUpdated(el);
 
-        expect(document.activeElement === radio4).to.be.true;
+        expect(document.activeElement === radio4, 'third 4').to.be.true;
 
         el.dispatchEvent(arrowDownEvent);
         await elementUpdated(el);
 
-        expect(document.activeElement === radio2).to.be.true;
+        expect(document.activeElement === radio2, 'fourth 2').to.be.true;
     });
     it('loads accepts "PageUp" and "PageDown" keys', async () => {
         const el = await fixture<HTMLDivElement>(
@@ -294,12 +295,6 @@ describe('Radio Group - focus control', () => {
             .true;
     });
 });
-
-function inputForRadio(radio: Radio): HTMLInputElement {
-    if (!radio.shadowRoot) throw new Error('No shadowRoot');
-
-    return radio.shadowRoot.querySelector('#input') as HTMLInputElement;
-}
 
 describe('Radio Group', () => {
     let testDiv!: HTMLDivElement;
@@ -425,7 +420,7 @@ describe('Radio Group', () => {
         expect(thirdRadio.checked).to.be.false;
         expect(radioGroup.selected).to.equal(firstRadio.value);
 
-        inputForRadio(secondRadio).click();
+        secondRadio.click();
         await elementUpdated(radioGroup);
 
         expect(firstRadio.checked).to.be.false;
@@ -433,7 +428,7 @@ describe('Radio Group', () => {
         expect(thirdRadio.checked).to.be.false;
         expect(radioGroup.selected).to.equal(secondRadio.value);
 
-        inputForRadio(thirdRadio).click();
+        thirdRadio.click();
         await elementUpdated(radioGroup);
 
         expect(firstRadio.checked).to.be.false;
@@ -463,7 +458,7 @@ describe('Radio Group', () => {
             'sp-radio[disabled]'
         ) as Radio;
 
-        inputForRadio(disabledRadio).click();
+        disabledRadio.click();
         await elementUpdated(radioGroup);
 
         expect(disabledRadio.checked).to.be.false;
@@ -538,7 +533,7 @@ describe('Radio Group', () => {
         ) as Radio;
 
         expect(radioGroup.selected).to.equal('third');
-        inputForRadio(radio2).click();
+        radio2.click();
         await elementUpdated(radioGroup);
 
         expect(radioGroup.selected).to.equal('second');
